@@ -9,6 +9,4 @@ import com.driver.model.Driver;
 @Repository
 public interface DriverRepository extends JpaRepository<Driver, Integer>{
 
-    void deleteByMobile(String mobile);
-
 }
