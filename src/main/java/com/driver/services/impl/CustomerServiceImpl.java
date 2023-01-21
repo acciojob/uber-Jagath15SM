@@ -70,6 +70,7 @@ public class CustomerServiceImpl implements CustomerService {
 		trip.setStatus(TripStatus.CANCELED);
 		trip.getCustomer().getTripBookingList().remove(trip);
 		trip.getDriver().getTripBookingList().remove(trip);
+		trip.setBill(0);
 		tripBookingRepository2.deleteById(tripId);
 	}
 
