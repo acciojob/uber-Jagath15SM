@@ -48,7 +48,7 @@ public class CustomerServiceImpl implements CustomerService {
 		Collections.sort(drivers, (d1, d2) -> d1.getDriverId() - d2.getDriverId());
 		TripBooking tripBooking = new TripBooking(fromLocation, toLocation, distanceInKm);
 		for(Driver d : drivers){
-			if(d.getCab().isAvailable()){
+			if(d.getCab().getAvailable()){
 				d.getCab().setAvailable(false);
 				tripBooking.setDriver(d);
 				tripBooking.setStatus(TripStatus.CONFIRMED);
