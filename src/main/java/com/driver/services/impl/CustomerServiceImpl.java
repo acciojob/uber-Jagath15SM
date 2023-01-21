@@ -60,7 +60,7 @@ public class CustomerServiceImpl implements CustomerService {
 		customer.getTripBookingList().add(tripBooking);
 		tripBooking.setCustomer(customer);
 		if(tripBooking.getDriver() == null){
-			throw new NoSuchElementException("No value present");
+			throw new Exception("No cab available!");
 		}
 		tripBookingRepository2.save(tripBooking);
 		customerRepository2.save(customer);
