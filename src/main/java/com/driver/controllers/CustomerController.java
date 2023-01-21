@@ -32,10 +32,7 @@ public class CustomerController {
 
 	@PostMapping("/bookTrip")
 	public ResponseEntity<Integer> bookTrip(@RequestParam Integer customerId, @RequestParam String fromLocation, @RequestParam String toLocation, @RequestParam Integer distanceInKm) throws Exception {
-		TripBooking bookedTrip = bookedTrip = customerService.bookTrip(customerId, fromLocation, toLocation, distanceInKm);
-		if(bookedTrip.getDriver() == null){
-			throw new NoSuchElementException("No value present");
-		}
+		TripBooking bookedTrip = customerService.bookTrip(customerId, fromLocation, toLocation, distanceInKm);
 		return new ResponseEntity<>(bookedTrip.getTripBookingId(), HttpStatus.CREATED);
 	}
 

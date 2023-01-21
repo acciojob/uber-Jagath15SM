@@ -14,6 +14,7 @@ import com.driver.model.TripStatus;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.NoSuchElementException;
 
 @Service
 public class CustomerServiceImpl implements CustomerService {
@@ -58,8 +59,11 @@ public class CustomerServiceImpl implements CustomerService {
 		}
 		customer.getTripBookingList().add(tripBooking);
 		tripBooking.setCustomer(customer);
+		if(tripBooking.getDriver() == null){
+			throw new NoSuchElementException("No value present");
+		}
+		tripBookingRepository2.save(tripBooking);
 		customerRepository2.save(customer);
-
 		return tripBooking;
 	}
 
@@ -71,7 +75,7 @@ public class CustomerServiceImpl implements CustomerService {
 		trip.getCustomer().getTripBookingList().remove(trip);
 		trip.getDriver().getTripBookingList().remove(trip);
 		trip.setBill(0);
-		tripBookingRepository2.deleteById(tripId);
+		tripBookingRepository2.save(trip);
 	}
 
 	@Override
