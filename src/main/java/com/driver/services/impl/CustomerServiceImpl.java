@@ -1,6 +1,7 @@
 package com.driver.services.impl;
 
 import com.driver.model.TripBooking;
+import com.driver.repository.CabRepository;
 import com.driver.services.CustomerService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -28,6 +29,9 @@ public class CustomerServiceImpl implements CustomerService {
 	@Autowired
 	TripBookingRepository tripBookingRepository2;
 
+	@Autowired
+	CabRepository cabRepository;
+
 	@Override
 	public void register(Customer customer) {
 		//Save the customer in database
@@ -44,26 +48,33 @@ public class CustomerServiceImpl implements CustomerService {
 	public TripBooking bookTrip(int customerId, String fromLocation, String toLocation, int distanceInKm) throws Exception{
 		//Book the driver with lowest driverId who is free (cab available variable is Boolean.TRUE). If no driver is available, throw "No cab available!" exception
 		//Avoid using SQL query
+		boolean tripBooked = false;
 		List<Driver> drivers = driverRepository2.findAll();
-		Customer customer = customerRepository2.findById(customerId).get();
 		Collections.sort(drivers, (d1, d2) -> d1.getDriverId() - d2.getDriverId());
 		TripBooking tripBooking = new TripBooking(fromLocation, toLocation, distanceInKm);
 		for(Driver d : drivers){
 			if(d.getCab().getAvailable()){
+				tripBooked = true;
 				d.getCab().setAvailable(false);
 				tripBooking.setDriver(d);
 				tripBooking.setStatus(TripStatus.CONFIRMED);
+				tripBooking.setBill(d.getCab().getPerKmRate()*distanceInKm);
+
+				d.getTripBookingList().add(tripBooking);
+				Customer customer=customerRepository2.findById(customerId).get();
+				customer.getTripBookingList().add(tripBooking);
+				tripBooking.setCustomer(customer);
+				tripBooking.setDriver(d);
+				cabRepository.save(d.getCab());
 				driverRepository2.save(d);
+				tripBookingRepository2.save(tripBooking);
+				customerRepository2.save(customer);
 				break;
 			}
 		}
-		customer.getTripBookingList().add(tripBooking);
-		tripBooking.setCustomer(customer);
-		if(tripBooking.getDriver() == null){
+		if(!tripBooked){
 			throw new Exception("No cab available!");
 		}
-		tripBookingRepository2.save(tripBooking);
-		customerRepository2.save(customer);
 		return tripBooking;
 	}
 
